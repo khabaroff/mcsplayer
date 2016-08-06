@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {Link} from 'react-router'
 
 import Button from '../components/Button'
 import Input from '../components/Input'
@@ -65,7 +66,8 @@ const IndexContainer = React.createClass({
         <form className='Index-form' onSubmit={this.handleSumbit}>
           <Input label='username' value={this.state.username} onUpdate={this.handleUsernameUpdate} />
           <Input type='password' label='password' value={this.state.password} onUpdate={this.handlePasswordUpdate} />
-          <Button>Sign in</Button>
+
+          <Link to='/profile/' className="Button Button--login">Sign in</Link>
         </form>
       </div>
     )

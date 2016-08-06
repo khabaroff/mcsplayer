@@ -5,6 +5,10 @@ function Album(props) {
       <div className="Album">
         <img className="Album-artWork" src={props.artWork} />
 
+        <button className="Album-btn Album-btn--play" onClick={props.onPause}></button>
+        <button className="Album-btn Album-btn--stop"></button>
+        <button onClick={props.onMuted}>Mute</button>
+        
         <div className="Album-artist">{props.artist}</div>
         <div className="Album-title">{props.title}</div>
       </div>

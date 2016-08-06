@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 
 import Input from '../components/Input'
 import Textarea from '../components/Textarea'
+import Contact from '../components/Contact'
 
 class ProfileContainer extends Component {
   constructor(props) {
@@ -10,8 +11,10 @@ class ProfileContainer extends Component {
     this.state = {
       fullName: '',
       bio: '',
-      contacts: []
+      contacts: [{id: 0, name: 'email', value: ''}]
     }
+
+    this.newId = 1
   }
 
   handleFullNameUpdate(e) {
@@ -26,25 +29,55 @@ class ProfileContainer extends Component {
       })
   }
 
-  componentWillUpdate() {
-    // console.log(this.state)
+  handleAdd() {
+      this.setState({
+        contacts: this.state.contacts.concat([{name: '', value: '', id: this.newId++}])
+      })
   }
 
-  componentDidMount() {
-    // alert('ready')
+  handleRemove(removedContact) {
+      const contacts = this.state.contacts.filter(function (contact) {
+  			return contact !== removedContact;
+  		});
+
+      this.setState({
+        contacts: contacts
+      })
+  }
+
+  handleChange(index, newContact) {
+      let contacts = this.state.contacts
+
+      Object.assign(contacts[index], newContact)
+
+      this.setState({
+        contacts: contacts
+      })
   }
 
   render() {
-    console.log(this.props)
+    const contactItems = this.state.contacts.map((contact, index) => {
+        return <Contact key={contact.id} index={index} name={contact.name}
+                        onChange={this.handleChange.bind(this)}
+                        onRemove={this.handleRemove.bind(this, contact)} />
+    })
 
     return (
       <div className='Profile'>
         <h1>Profile</h1>
 
-        <Input label='Full name' value={this.state.fullName} onUpdate={this.handleFullNameUpdate.bind(this)}/>
-        <Textarea label='Bio' value={this.state.bio} onUpdate={this.handleBioUpdate.bind(this)}/>
+        <Input label='Full name' value={this.state.fullName}
+           onUpdate={this.handleFullNameUpdate.bind(this)}/>
+        <Textarea label='Bio' value={this.state.bio}
+          onUpdate={this.handleBioUpdate.bind(this)}/>
 
         <h2>Contacts</h2>
+
+        <ul className="Profile-contacts">
+            {contactItems}
+        </ul>
+
+        <button className="Button" onClick={this.handleAdd.bind(this)}>Add contact</button>
       </div>
     )
   }

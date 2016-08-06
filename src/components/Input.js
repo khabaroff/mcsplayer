@@ -10,8 +10,8 @@ function Input(props) {
 }
 
 Input.propTypes = {
-  label: PropTypes.string.isRequired,
-  onUpdate: PropTypes.func.isRequired
+  label: PropTypes.string.isRequired
+  // onUpdate: PropTypes.func.isRequired
 }
 
 export default Input
