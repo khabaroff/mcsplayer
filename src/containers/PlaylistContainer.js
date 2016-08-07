@@ -3,15 +3,13 @@ import React, {Component} from 'react'
 import {withRouter} from 'react-router'
 import axios from 'axios'
 
-import Album from '../components/Album'
 import TrackList from '../components/TrackList'
 
-class AlbumContainer extends Component {
+class PlaylistContainer extends Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      album: {},
       tracks: [],
       track: {
         isPlaying: false,
@@ -28,35 +26,31 @@ class AlbumContainer extends Component {
       this.loadData()
   }
 
-  getAlbumData() {
-    return axios.get('https://api.spotify.com/v1/albums/' + this.props.params.id)
-  }
-
   getTracksData() {
-    return axios.get('https://api.spotify.com/v1/albums/' + this.props.params.id + '/tracks/')
-  }
+    let spotifyIds = []
 
-  postTrack(id) {
-    axios.post('/api/favorites/', {spotifyId: id})
+    return axios.get('http://localhost:8000/api/favorites/')
+    .then(function(response) {
+      for (let track of response.data) {
+        console.log(track)
+
+        if (track.spotifyId && track.spotifyId !== '') {
+          spotifyIds.push(track.spotifyId);
+        }
+      }
+    })
+    .then(function() {
+      return axios.get('https://api.spotify.com/v1/tracks?ids=' + spotifyIds.join(','))
+    }).then((response) => {
+      this.setState({
+        isLoading: false,
+        tracks: response.data.tracks
+      })
+    })
   }
 
   loadData() {
-    axios.all([this.getAlbumData(), this.getTracksData()])
-      .then(axios.spread((album, tracks) => {
-          this.setState({
-            isLoading: false,
-            album: {
-                artist: album.data.artists[0].name,
-                title: album.data.name,
-                artWork: album.data.images[0].url
-            },
-            tracks: tracks.data.items
-          })
-      }));
-  }
-
-  handleTrackSelect() {
-
+    this.getTracksData()
   }
 
   handlePlayTrack(id, previewUrl) {
@@ -90,16 +84,19 @@ class AlbumContainer extends Component {
      this.setState({
        track: {
          isPlaying: !this.state.track.isPlaying,
-         previewUrl: this.state.track.previewUrl,
-         muted: false
+         muted: this.state.track.muted,
+         previewUrl: this.state.track.previewUrl
        }
      })
   }
 
   handleMute() {
     this.setState({
-      track: Object.assign(this.state.track, {muted: !this.state.track.muted})
-
+      track: {
+        muted: !this.state.track.muted,
+        previewUrl: this.state.track.previewUrl,
+        isPlaying: this.state.track.isPlaying
+      }
     })
   }
 
@@ -125,7 +122,6 @@ class AlbumContainer extends Component {
     }
 
     this.audio.muted = this.state.track.muted
-
   }
 
   componentWillUnmount() {
@@ -138,23 +134,21 @@ class AlbumContainer extends Component {
 
     if (!this.state.isLoading) {
       content = (
-        <div className='AlbumContainer-player'>
-          <Album artist={this.state.album.artist} title={this.state.album.title}
-            artWork={this.state.album.artWork} onPause={this.handlePause.bind(this)} onMuted={this.handleMute.bind(this)} />
+        <div className='PlaylistContainer-player'>
           <TrackList tracks={this.state.tracks}
-            onPlayTrack={this.handlePlayTrack.bind(this)} onAddTrack={this.postTrack.bind(this)} />
+            onPlayTrack={this.handlePlayTrack.bind(this)} />
         </div>
       )
     } else {
-      content = (<div className='AlbumContainer'>...isLoading</div>)
+      content = (<div className='PlaylistContainer'>...isLoading</div>)
     }
 
     return (
-      <div className='AlbumContainer'>
+      <div className='PlaylistContainer'>
         {content}
       </div>
     )
   }
 }
 
-export default withRouter(AlbumContainer)
+export default withRouter(PlaylistContainer)

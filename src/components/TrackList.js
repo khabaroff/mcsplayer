@@ -10,7 +10,9 @@ function TrackList(props) {
       id={track.id}
       previewUrl={track.preview_url}
       duration={track.duration}
-      onPlayTrack={props.onPlayTrack} />
+      onPlayTrack={props.onPlayTrack}
+      onAddTrack={props.onAddTrack}
+      />
 
   });
 
