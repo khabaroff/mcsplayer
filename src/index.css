@@ -292,7 +292,7 @@ body {
 .Nav {
   height: 60px;
   width: 100%;
-  background: linear-gradient(135deg, #FF0000, #0000FF);
+  background: linear-gradient(135deg, #00FF00, #000000);
   color: #fff;
   display: flex;
   align-items: center;
